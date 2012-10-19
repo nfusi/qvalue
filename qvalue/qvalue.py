@@ -1,34 +1,26 @@
-try:
-    import rpy2.robjects.numpy2ri
-    from rpy2.robjects import r as r
-    from rpy2 import rinterface
-except ImportError:
-    pass
-
 import numpy as np
 import scipy as sp
 import sys, pickle, pdb
 import scipy.stats as st
 import scipy.interpolate
-from numba import double
-from numba.decorators import jit as jit
-from numba.decorators import autojit as autojit
 
+def estimate(pv, m = None, verbose = False, lowmem = False, pi0 = None):
+    """
+    Estimates q-values from p-values
 
-def R_qvalues(pv):
-    rinterface.set_writeconsole(None)
-    r.library("qvalue")
-    bench = r("qvalue")
+    Args
+    =====
+
+    m: number of tests. If not specified m = pv.size
+    verbose: print verbose messages? (default False)
+    lowmem: use memory-efficient in-place algorithm
+    pi0: if None, it's estimated as suggested in Storey and Tibshirani, 2003. 
+         For most GWAS this is not necessary, since pi0 is extremely likely to be
+         1
+
+    """
     
-    results = bench(pv)
-    pi0 = results[1]
-    qv = np.array(results[2]) 
-
-    return qv, pi0 
-
-
-def estimate(pv):
-    m = None, verbose = False, lowmem = False, pi0 = None
+    
     assert(pv.min() >= 0 and pv.max() <= 1), "p-values should be between 0 and 1"
 
     original_shape = pv.shape
@@ -92,7 +84,7 @@ def estimate(pv):
 
         for i in xrange(len(pv)-2, -1, -1):
             qv[i] = min(pi0*m*pv[i]/(i+1.0), qv[i+1])
-
+        
         # reorder qvalues
         qv_temp = qv.copy()
         qv = sp.zeros_like(qv)
@@ -102,5 +94,3 @@ def estimate(pv):
         qv = qv.reshape(original_shape)
         
     return qv
-
-#fast_estimate = jit(restype=double[:,:], argtypes=[double[:,:]])(estimate)
