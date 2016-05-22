@@ -90,7 +90,7 @@ def estimate(pv, m = None, verbose = False, lowmem = False, pi0 = None):
         qv = sp.zeros_like(qv)
         qv[p_ordered] = qv_temp
 
-        # reshape qvalues
-        qv = qv.reshape(original_shape)
+    # reshape qvalues
+    qv = qv.reshape(original_shape)
         
     return qv
