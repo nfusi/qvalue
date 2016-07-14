@@ -1,6 +1,7 @@
 import scipy as sp
 from scipy import interpolate
 
+
 def estimate(pv, m=None, verbose=False, lowmem=False, pi0=None):
     """
     Estimates q-values from p-values
@@ -45,6 +46,8 @@ def estimate(pv, m=None, verbose=False, lowmem=False, pi0=None):
         # fit natural cubic spline
         tck = interpolate.splrep(lam, pi0, k=3)
         pi0 = interpolate.splev(lam[-1], tck)
+        if verbose:
+            print("qvalues pi0=%.3f, estimated proportion of null features " % pi0)
 
         if pi0 > 1:
             if verbose:
