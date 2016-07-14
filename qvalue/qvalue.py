@@ -1,5 +1,5 @@
 import scipy as sp
-
+from scipy import interpolate
 
 def estimate(pv, m=None, verbose=False, lowmem=False, pi0=None):
     """
@@ -43,8 +43,8 @@ def estimate(pv, m=None, verbose=False, lowmem=False, pi0=None):
         pi0 = sp.array(pi0)
 
         # fit natural cubic spline
-        tck = sp.interpolate.splrep(lam, pi0, k=3)
-        pi0 = sp.interpolate.splev(lam[-1], tck)
+        tck = interpolate.splrep(lam, pi0, k=3)
+        pi0 = interpolate.splev(lam[-1], tck)
 
         if pi0 > 1:
             if verbose:
